@@ -1,6 +1,6 @@
 import joblib
 import numpy as np
-from src.common.load_anomaly import create_synthetic_anomaly
+from src.common.load_anomaly import build_composite_anomaly
 from src.common.load_clean import get_clean_data
 from src.models.unsupervised.lof import predict_lof, train_lof
 from src.pipelines.evaluate import Evaluate
@@ -15,8 +15,8 @@ class LOF:
         clean_sma = get_clean_data("data/frecs/SMA")
         clean_fm = get_clean_data("data/frecs/FM")
 
-        anomaly_sma = create_synthetic_anomaly(clean_sma, "RUIDO", 10)
-        anomaly_fm = create_synthetic_anomaly(clean_fm, "RUIDO", 10)
+        anomaly_sma = build_composite_anomaly(clean_sma)
+        anomaly_fm = build_composite_anomaly(clean_fm)
 
         self.sma_train, self.sma_clean_test, self.sma_anomaly_test, self.sma_test = setup.get_train_data_unsupervised(clean_sma, anomaly_sma)
         self.fm_train, self.fm_clean_test, self.fm_anomaly_test, self.fm_test = setup.get_train_data_unsupervised(clean_fm, anomaly_fm)
@@ -44,3 +44,7 @@ class LOF:
         
         self.report.generate_unsupervised_report('lof', 'SMA', results_sma)
         self.report.generate_unsupervised_report('lof', 'FM', results_fm)
+
+    def train(self) -> None:
+        train_lof(self.sma_train, frequency="SMA")
+        train_lof(self.fm_train, frequency="FM")

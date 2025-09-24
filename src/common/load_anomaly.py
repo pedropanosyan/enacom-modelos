@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Literal
+from typing import Literal, List, Optional
 
 def create_synthetic_anomaly(
     clean_data: np.ndarray, 
@@ -36,3 +36,41 @@ def create_synthetic_anomaly(
     elif anomaly_type == "BLOCKING":
         elevacion = level_db * (0.3 + 0.7 * np.random.rand(clean_data.shape[0], clean_data.shape[1]))
         return clean_data + elevacion
+
+
+def build_composite_anomaly(
+    clean_data: np.ndarray,
+    noise_types: Optional[List[str]] = None,
+    levels: Optional[List[int]] = None,
+    seed: Optional[int] = None,
+) -> np.ndarray:
+    """Build a composite anomaly set splitting rows uniformly across noise types/levels.
+
+    Keeps total rows equal to input. Distributes remainders fairly across leading combos.
+    """
+    if noise_types is None:
+        noise_types = ["RUIDO", "SPURIA", "DROPOUT", "BLOCKING"]
+    if levels is None:
+        levels = [1, 3, 5, 7]
+
+    combos = [(t, l) for t in noise_types for l in levels]
+    num_rows = clean_data.shape[0]
+    if num_rows == 0 or len(combos) == 0:
+        return np.empty_like(clean_data)
+
+    base = num_rows // len(combos)
+    remainder = num_rows % len(combos)
+
+    rng = np.random.default_rng(seed)
+    indices = rng.permutation(num_rows)
+    start = 0
+    parts = []
+    for i, (t, l) in enumerate(combos):
+        count = base + (1 if i < remainder else 0)
+        if count == 0:
+            continue
+        subset = clean_data[indices[start:start + count], :]
+        parts.append(create_synthetic_anomaly(subset, t, l))
+        start += count
+
+    return np.vstack(parts) if parts else np.empty_like(clean_data)

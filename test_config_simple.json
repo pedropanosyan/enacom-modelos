@@ -1,0 +1,32 @@
+{
+  "models": {
+    "knn": {
+      "enabled": true
+    },
+    "mlp": {
+      "enabled": true
+    },
+    "random_forest": {
+      "enabled": true
+    },
+    "isolation_forest": {
+      "enabled": true
+    },
+    "lof": {
+      "enabled": true
+    }
+  },
+  "noise_types": {
+    "RUIDO": [1.0, 5.0],
+    "SPURIA": [5.0, 20.0],
+    "DROPOUT": [5.0, 20.0],
+    "BLOCKING": [5.0, 20.0]
+  },
+  "frequencies": ["SMA", "FM"],
+  "execution": {
+    "max_workers": 2,
+    "save_models": true,
+    "generate_reports": true,
+    "verbose": true
+  }
+}

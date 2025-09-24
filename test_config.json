@@ -1,0 +1,44 @@
+{
+  "models": {
+    "knn": {
+      "enabled": false
+    },
+    "mlp": {
+      "enabled": false
+    },
+    "random_forest": {
+      "enabled": false
+    },
+    "xgboost": {
+      "enabled": false
+    },
+    "isolation_forest": {
+      "enabled": false
+    },
+    "lof": {
+      "enabled": false
+    },
+    "elliptic_envelope": {
+      "enabled": true
+    },
+    "autoencoder": {
+      "enabled": true
+    },
+    "pca_iforest": {
+      "enabled": true
+    }
+  },
+  "noise_types": {
+    "RUIDO": [0.5, 2.0, 10.0],
+    "SPURIA": [2.0, 10.0, 50.0],
+    "DROPOUT": [2.0, 10.0, 50.0],
+    "BLOCKING": [2.0, 10.0, 50.0]
+  },
+  "frequencies": ["SMA", "FM"],
+  "execution": {
+    "max_workers": 4,
+    "save_models": true,
+    "generate_reports": true,
+    "verbose": true
+  }
+}

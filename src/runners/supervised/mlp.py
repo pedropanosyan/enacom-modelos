@@ -1,6 +1,6 @@
 import joblib
 import numpy as np
-from src.common.load_anomaly import create_synthetic_anomaly
+from src.common.load_anomaly import build_composite_anomaly
 from src.common.load_clean import get_clean_data
 from src.models.supervised.mlp import predict_mlp, train_mlp
 from src.pipelines.evaluate import Evaluate
@@ -15,8 +15,8 @@ class MLP:
         clean_sma = get_clean_data("data/frecs/SMA")
         clean_fm = get_clean_data("data/frecs/FM")
 
-        anomaly_sma = create_synthetic_anomaly(clean_sma, "RUIDO", 10)
-        anomaly_fm = create_synthetic_anomaly(clean_fm, "RUIDO", 10)
+        anomaly_sma = build_composite_anomaly(clean_sma)
+        anomaly_fm = build_composite_anomaly(clean_fm)
 
         self.sma_x_train, self.sma_x_test, self.sma_y_train, self.sma_y_test = setup.get_train_data_supervised(clean_sma, anomaly_sma)
         self.fm_x_train, self.fm_x_test, self.fm_y_train, self.fm_y_test = setup.get_train_data_supervised(clean_fm, anomaly_fm)
@@ -41,3 +41,7 @@ class MLP:
         
         self.report.generate_supervised_report('mlp', 'SMA', results_sma)
         self.report.generate_supervised_report('mlp', 'FM', results_fm)
+
+    def train(self) -> None:
+        train_mlp(self.sma_x_train, self.sma_y_train, frequency="SMA")
+        train_mlp(self.fm_x_train, self.fm_y_train, frequency="FM")

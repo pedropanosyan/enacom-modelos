@@ -13,3 +13,6 @@ __pycache__/
 /venv
 data
 /src/models/saved
+/reports
+/saved/*
+/summary_tables

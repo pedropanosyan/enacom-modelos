@@ -2,7 +2,7 @@ import os
 import numpy as np
 import joblib
 from typing import Dict, Any
-from src.common.load_anomaly import create_synthetic_anomaly
+from src.common.load_anomaly import build_composite_anomaly
 from src.models.unsupervised import isolation_forest
 from src.models.unsupervised.isolation_forest import train_isolation_forest
 from src.pipelines.evaluate import Evaluate
@@ -17,8 +17,8 @@ class IsolationForest:
         clean_sma = get_clean_data("data/frecs/SMA")
         clean_fm = get_clean_data("data/frecs/FM")
 
-        anomaly_sma = create_synthetic_anomaly(clean_sma, "RUIDO", 10)
-        anomaly_fm = create_synthetic_anomaly(clean_fm, "RUIDO", 10)
+        anomaly_sma = build_composite_anomaly(clean_sma)
+        anomaly_fm = build_composite_anomaly(clean_fm)
 
         self.sma_train, self.sma_clean_test, self.sma_anomaly_test, self.sma_test = setup.get_train_data_unsupervised(clean_sma, anomaly_sma)
         self.fm_train, self.fm_clean_test, self.fm_anomaly_test, self.fm_test = setup.get_train_data_unsupervised(clean_fm, anomaly_fm)
@@ -47,3 +47,7 @@ class IsolationForest:
         
         self.report.generate_unsupervised_report('isolation_forest', 'SMA', results_sma)
         self.report.generate_unsupervised_report('isolation_forest', 'FM', results_fm)
+
+    def train(self) -> None:
+        train_isolation_forest(self.sma_train, frequency="SMA")
+        train_isolation_forest(self.fm_train, frequency="FM")
